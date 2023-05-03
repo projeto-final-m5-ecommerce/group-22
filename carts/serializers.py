@@ -10,6 +10,7 @@ class CartSerializer(serializers.ModelSerializer):
             "name",
             "price",
             "category",
+            "total",
             "ordered_time",
             "status",
             "user_id",
