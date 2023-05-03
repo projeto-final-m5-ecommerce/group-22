@@ -5,8 +5,8 @@ from .models import Address
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ["id", "street", "number", "city", "state", "user_id"]
-        read_only_fields = ["id", "user_id"]
+        fields = ["id", "street", "number", "city", "state"]
+        read_only_fields = ["id"]
 
     def create(self, validated_data):
         return Address.objects.create(**validated_data)
