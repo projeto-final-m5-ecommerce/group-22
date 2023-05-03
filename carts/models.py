@@ -2,12 +2,15 @@ from django.db import models
 
 
 class Cart(models.Model):
-    quantity = models.IntegerField()
-    price = models.FloatField()
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    product = models.ManyToManyField(
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, related_name="carts"
+    )
+
+    cart_products = models.ManyToManyField(
         "products.Product",
-        related_name="Products_Orders",
+        related_name="carts",
     )
 
 
