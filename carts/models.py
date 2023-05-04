@@ -24,8 +24,3 @@ class ProductsOrders(models.Model):
         on_delete=models.RESTRICT,
     )
  """
-
-# Será necessário desenvolver uma model para armazenar os produtos que o usuário selecionou, antes de finalizar a compra.
-# Deve conter a lista dos produtos que foram pedidos, com o valor nos items.
-# Um pedido não pode ser finalizado se não tiver estoque.
-# Se os produtos do carrinho forem de diferentes vendedores, deve ser criado um pedido para cada.
