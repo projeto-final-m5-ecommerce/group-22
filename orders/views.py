@@ -11,11 +11,12 @@ class OrderView(generics.CreateAPIView):
     serializer_class = OrderSerializer
 
     def perform_create(self, serializer):
-        cart_id = self.kwargs.get("pk")
-        cart = Cart.objects.filter(id=cart_id).values()
+        # cart_id = self.kwargs.get("pk")
+        # cart = Cart.objects.filter(id=cart_id).values()
         # list_products = cart.
 
-        user = self.request.user
+        # user = self.request.user.
         # list_products = user.
 
-        serializer.save(album_id=self.kwargs.get("pk"))
+        # serializer.save()
+        return serializer.save(user_id=self.kwargs.get("pk"))
