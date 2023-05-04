@@ -6,7 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 
-class CartView(generics.RetrieveUpdateDestroyAPIView):
+class CartView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -15,29 +15,21 @@ class CartView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Cart.objects.filter(user=self.request.user)
 
-    def get_object(self):
-        queryset = self.get_queryset()
-        obj = queryset.first()
-        if not obj:
-            obj = Cart.objects.create(user=self.request.user)
-        return obj
+    def get_serializer(self, *args, **kwargs):
+        kwargs["many"] = True
+        return super().get_serializer(*args, **kwargs)
 
-    def put(self, request, *args, **kwargs):
-        cart = self.get_object()
-        serializer = self.get_serializer(cart, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-
-        for cart_product in serializer.validated_data["cart_products"]:
-            product = cart_product["product"]
-            seller = cart_product["seller"]
-            quantity = cart_product["quantity"]
-            if product.stock < quantity or product.seller != seller:
+    def perform_create(self, serializer):
+        cart = serializer.save(user=self.request.user)
+        for cart_product in cart.cart_products.all():
+            product = cart_product.product
+            quantity = cart_product.quantity
+            if product.stock < quantity:
+                cart_product.available = False
+                cart_product.save()
                 return Response(
                     {
-                        "message": f"Product '{product.name}' is not available in the requested quantity or from the selected seller."
+                        "message": f"Product '{product.name}' is not available in the requested quantity."
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
