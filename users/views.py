@@ -19,9 +19,6 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def perform_update(self, serializer):
-        serializer.partial = True
-        serializer.save()
 
 class UserUpdateTypeView(generics.UpdateAPIView):
     queryset = User.objects.all()
