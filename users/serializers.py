@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from addresses.models import Address
+
+from addresses.serializers import AddressSerializer
 from .models import User
 
 
@@ -15,7 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all())],
     )
-    password = serializers.CharField(write_only=True)
+
+    address = AddressSerializer()
 
     class Meta:
         model = User
@@ -26,24 +30,33 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "first_name",
             "last_name",
-            "user_type",
             "is_seller",
-            "is_superuser",
+            "address",
+            # "is_superuser",
         ]
         read_only_fields = [
             "id",
-            "is_superuser",
+            # "is_superuser",
         ]
+        extra_kwargs = {"password": {"write_only": True}}
 
-    def create(self, validated_data):
-        return User.objects.create_superuser(**validated_data)
+    def create(self, validated_data: dict) -> User:
+        address_data = validated_data.pop("address")
 
-    def update(self, instance, validated_data):
+        user = User.objects.create_user(**validated_data)
+
+        address = Address.objects.create(user=user, **address_data)
+
+        return user
+
+    def update(self, instance: User, validated_data: dict) -> User:
         for key, value in validated_data.items():
-            if key == "password":
-                instance.set_password(value)
-            else:
-                setattr(instance, key, value)
+            setattr(instance, key, value)
+
+        new_password = validated_data.pop("password", "")
+
+        if new_password:
+            instance.set_password(new_password)
 
         instance.save()
 
