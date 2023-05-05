@@ -1,17 +1,15 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
+from rest_framework import generics
 from .models import Cart
 from .serializers import CartSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from products.models import Product
-import ipdb
 
 
 class CartListView(generics.ListAPIView):
-    # authentication_classes = [JWTAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
@@ -19,7 +17,7 @@ class CartListView(generics.ListAPIView):
 
 class CartUpdateView(generics.UpdateAPIView):
     authentication_classes = [JWTAuthentication]
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     serializer_class = CartSerializer
     queryset = Product.objects.all()

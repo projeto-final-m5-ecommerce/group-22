@@ -1,19 +1,30 @@
 from rest_framework import serializers
 from .models import Cart
 
-# from ..products.models import Product
-import ipdb
-
 
 class CartSerializer(serializers.ModelSerializer):
+    cart_products = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
+
     class Meta:
         model = Cart
-        fields = "__all__"
+        fields = ["cart_products", "total"]
+        read_only_fields = ["id", "user_id", "total"]
 
+    def get_total(self, obj):
+        all_products = obj.cart_products.all()
+        all_values = [product.price for product in all_products]
+        return sum(all_values)
 
-# def update(self, instance, validated_data):
-# acessar o usuario para fazer o update no carrinho do usuario, preciso do pk da url
-# ipdb.set_trace()
-
-
-# read_only_fields = ["id", "user_id", "total"]
+    def get_cart_products(self, obj):
+        all_products = obj.cart_products.all()
+        result = []
+        for product in all_products:
+            product_serialized = {
+                "name": product.name,
+                "category": product.category,
+                "price": product.price,
+                "quantity": 1,
+            }
+            result.append(product_serialized)
+        return result
