@@ -5,15 +5,7 @@ from .models import Order
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = [
-            "id",
-            "name",
-            "price",
-            "category",
-            "ordered_time",
-            "status",
-            "user_id",
-        ]
+        fields = "__all__"
         read_only_fields = ["id", "user_id", "ordered_time"]
 
     def create(self, validated_data):
