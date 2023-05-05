@@ -16,9 +16,9 @@ class OrderView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         # users = User.objects.all()[0]
-        # user = self.request.user
-        # ipdb.set_trace()
+        user = self.request.user.cart
+        ipdb.set_trace()
         # list_products = user.
 
         # serializer.save()
-        return serializer.save()
+        return serializer.save(user_id=self.request.user.id)
