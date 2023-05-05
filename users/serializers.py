@@ -45,6 +45,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         user = User.objects.create_user(**validated_data)
 
+        cart = Cart.objects.create(user=user)
+
         address = Address.objects.create(user=user, **address_data)
 
         return user
