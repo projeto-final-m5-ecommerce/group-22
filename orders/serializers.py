@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import Order
-from carts.models import Cart
+from carts.models import Cart, ProductsCart
 
-# import ipdb
+import ipdb
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -31,12 +31,21 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return list_products
 
+    # def get_total(self, obj):
+    #     id_user = obj.user.id
+    #     filtered_cart = Cart.objects.filter(user=id_user)
+    #     user_cart = filtered_cart[0].cart_products.all()
+    #     all_values = [product.price for product in user_cart]
+    #     return sum(all_values)
+
     def get_total(self, obj):
         id_user = obj.user.id
         filtered_cart = Cart.objects.filter(user=id_user)
-        user_cart = filtered_cart[0].cart_products.all()
-        all_values = [product.price for product in user_cart]
-        return sum(all_values)
+        cart_id = filtered_cart[0].id
+        ipdb.set_trace()
+        current_cart = ProductsCart.objects.filter(cart=cart_id)
+        # all_values = [product.price for product in user_cart]
+        # return "100"
 
     def create(self, validated_data):
         return Order.objects.create(**validated_data)
