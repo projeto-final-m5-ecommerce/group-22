@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import Product
+from django.core.validators import MinValueValidator
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -11,6 +12,11 @@ class ProductSerializer(serializers.ModelSerializer):
                 message="A product with that name already exists.",
             )
         ],
+    )
+    price = serializers.DecimalField(
+        validators=[MinValueValidator(0.01, "price can't be negative or zero.")],
+        max_digits=10,
+        decimal_places=2,
     )
 
     class Meta:
@@ -35,9 +41,6 @@ class ProductSerializer(serializers.ModelSerializer):
         if representation["stock"] is 0:
             representation["available"] = representation["available"] == False
 
-        if representation["price"] < 0:
-            raise ValueError("Price can't be negative")
-
         return representation
 
     def create(self, validated_data):
@@ -46,11 +49,6 @@ class ProductSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         for key, value in validated_data.items():
             setattr(instance, key, value)
-
-        if self.stock > 0:
-            self.available = True
-        else:
-            self.available = False
 
         instance.save()
         return instance
