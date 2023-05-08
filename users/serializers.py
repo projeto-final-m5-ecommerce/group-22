@@ -32,11 +32,9 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "is_seller",
             "address",
-            # "is_superuser",
         ]
         read_only_fields = [
             "id",
-            # "is_superuser",
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
