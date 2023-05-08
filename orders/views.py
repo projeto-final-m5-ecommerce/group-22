@@ -5,6 +5,8 @@ from .serializers import OrderSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
+# import ipdb
+
 
 class OrderView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -14,10 +16,4 @@ class OrderView(generics.CreateAPIView):
     serializer_class = OrderSerializer
 
     def perform_create(self, serializer):
-        # users = User.objects.all()[0]
-        # user = self.request.user
-        # ipdb.set_trace()
-        # list_products = user.
-
-        # serializer.save()
-        return serializer.save()
+        return serializer.save(user=self.request.user)

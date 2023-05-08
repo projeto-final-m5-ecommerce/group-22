@@ -3,28 +3,28 @@ from .models import Cart
 
 
 class CartSerializer(serializers.ModelSerializer):
+    cart_products = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
+
     class Meta:
         model = Cart
-        fields = [
-            "id",
-            "name",
-            "price",
-            "category",
-            "total",
-            "ordered_time",
-            "status",
-            "user_id",
-        ]
-        read_only_fields = ["id", "user_id", "ordered_time"]
+        fields = ["cart_products", "total"]
+        read_only_fields = ["id", "user_id", "total"]
 
-    def create(self, validated_data):
-        return Cart.objects.create(**validated_data)
+    def get_total(self, obj):
+        all_products = obj.cart_products.all()
+        all_values = [product.price for product in all_products]
+        return sum(all_values)
 
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            # so vendedor pode alterar status
-            setattr(instance, key, value)
-
-        instance.save()
-
-        return instance
+    def get_cart_products(self, obj):
+        all_products = obj.cart_products.all()
+        result = []
+        for product in all_products:
+            product_serialized = {
+                "name": product.name,
+                "category": product.category,
+                "price": product.price,
+                "quantity": 1,
+            }
+            result.append(product_serialized)
+        return result
