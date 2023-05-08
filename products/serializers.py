@@ -35,6 +35,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if representation["stock"] is 0:
             representation["available"] = representation["available"] == False
 
+        if representation["price"] < 0:
+            raise ValueError("Price can't be negative")
+
         return representation
 
     def create(self, validated_data):
