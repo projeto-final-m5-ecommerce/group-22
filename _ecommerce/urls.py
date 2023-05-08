@@ -13,10 +13,10 @@ urlpatterns = [
     path("api/", include("carts.urls")),
     path("api/", include("orders.urls")),
     path("api/", include("products.urls")),
-    # path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    # path(
-    #     "api/docs/",
-    #     SpectacularSwaggerView.as_view(url_name="schema"),
-    #     name="swagger-ui",
-    # ),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/swagger/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
 ]
