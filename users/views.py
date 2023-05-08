@@ -4,7 +4,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from users.models import User
 from users.permissions import IsAdmin
 from users.serializers import UserSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
 class UserView(generics.ListCreateAPIView):

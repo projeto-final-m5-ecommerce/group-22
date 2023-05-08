@@ -27,13 +27,6 @@ class ProductView(ListCreateAPIView, PageNumberPagination):
         "id",
     ]
 
-    # def save(self, *args, **kwargs):
-    #     if self == 0:
-    #         self.available = False
-    #     else:
-    #         self.available = True
-    #     super(Product, self).save(*args, **kwargs)
-
     def perform_create(self, serializer):
         get_user = get_object_or_404(User, id=self.request.user.id)
 
