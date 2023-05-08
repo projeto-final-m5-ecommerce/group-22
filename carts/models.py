@@ -10,18 +10,19 @@ class Cart(models.Model):
 
     cart_products = models.ManyToManyField(
         "products.Product",
+        through="ProductsCart",
         related_name="carts",
     )
 
 
-""" 
-class ProductsOrders(models.Model):
+class ProductsCart(models.Model):
     product = models.ForeignKey(
         "products.Product",
         on_delete=models.RESTRICT,
     )
-    order = models.ForeignKey(
-        "orders.Order",
+    cart = models.ForeignKey(
+        "carts.Cart",
         on_delete=models.RESTRICT,
     )
- """
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.IntegerField(default=1)
