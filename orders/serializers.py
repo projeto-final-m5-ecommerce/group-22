@@ -1,12 +1,15 @@
 from rest_framework import serializers
 from .models import Order
 from carts.models import Cart
+from django.core.mail import send_mail
+from django.conf import settings
+from products.serializers import ProductSerializer
 
-# import ipdb
+import ipdb
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = serializers.SerializerMethodField()
+    products = ProductSerializer(many=True, read_only=True)
     total = serializers.SerializerMethodField()
 
     class Meta:
@@ -42,9 +45,19 @@ class OrderSerializer(serializers.ModelSerializer):
         return Order.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        user_email = self.user.email
+
         for key, value in validated_data.items():
             # so vendedor pode alterar status
-            setattr(instance, key, value)
+            if key == "status" and value != "Order placed":
+                send_mail(
+                    subject="Order Status",
+                    message="Your order status has been updated.",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[user_email],
+                    fail_silently=False,
+                )
+                setattr(instance, key, value)
 
         instance.save()
 
