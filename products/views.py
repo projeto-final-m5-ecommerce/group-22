@@ -1,6 +1,4 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.views import status
-from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
@@ -10,12 +8,13 @@ from django.shortcuts import get_object_or_404
 from .serializers import ProductSerializer
 from .models import Product
 from users.models import User
+from .permissions import IsAdminOrSeller
 
 
 class ProductView(ListCreateAPIView, PageNumberPagination):
     authentication_classes = [JWTAuthentication]
     pagination_class = PageNumberPagination
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrSeller]
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
