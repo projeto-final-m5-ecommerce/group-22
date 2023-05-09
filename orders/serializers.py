@@ -1,14 +1,15 @@
 from rest_framework import serializers
 from .models import Order
-from carts.models import Cart, ProductsCart
+from carts.models import Cart
 from django.core.mail import send_mail
 from django.conf import settings
+from products.serializers import ProductSerializer
 
 import ipdb
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = serializers.SerializerMethodField()
+    products = ProductSerializer(many=True, read_only=True)
     total = serializers.SerializerMethodField()
 
     class Meta:
