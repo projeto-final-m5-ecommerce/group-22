@@ -5,9 +5,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from products.serializers import ProductSerializer
 
-import ipdb
-
-
 class OrderSerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True)
     total = serializers.SerializerMethodField()

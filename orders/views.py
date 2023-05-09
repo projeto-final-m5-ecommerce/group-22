@@ -5,8 +5,6 @@ from .serializers import OrderSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-# import ipdb
-
 
 class OrderView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
