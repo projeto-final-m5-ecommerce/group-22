@@ -1,4 +1,4 @@
-from rest_framework import generics, serializers, status
+from rest_framework import generics, status
 from .models import Cart
 from .serializers import CartSerializer, CartListSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -6,8 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from products.models import Product
 from rest_framework.exceptions import ValidationError, APIException
-
-import ipdb
 
 
 class CustomValidationError(APIException):
