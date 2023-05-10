@@ -1,12 +1,17 @@
-from rest_framework import generics
+from rest_framework import generics, serializers, status
 from .models import Cart
 from .serializers import CartSerializer, CartListSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from products.models import Product
+from rest_framework.exceptions import ValidationError, APIException
 
-from rest_framework import serializers
+import ipdb
+
+
+class CustomValidationError(APIException):
+    status_code = status.HTTP_403_FORBIDDEN
 
 
 class CartListView(generics.ListAPIView):
@@ -34,6 +39,11 @@ class CartUpdateView(generics.UpdateAPIView):
 
         cart_product = cart.cart_products.all()
 
+        current_product = Product.objects.get(id=self.kwargs.get("pk"))
+        if cart.user_id == current_product.user_id:
+            message = f"It is not possible to add your own product to the cart."
+            raise CustomValidationError(detail=message)
+
         if cart_product:
             for product in cart_product:
                 if product.id == self.kwargs.get("pk"):
@@ -42,13 +52,12 @@ class CartUpdateView(generics.UpdateAPIView):
                         message = (
                             f"Insufficient amount of {product.name} product available."
                         )
-                        raise serializers.ValidationError(
+                        raise ValidationError(
                             message,
-                            code="invalid",
+                            code=status.HTTP_400_BAD_REQUEST,
                         )
                     product.save()
-                else:
-                    current_product = Product.objects.get(id=self.kwargs.get("pk"))
-                    cart.cart_products.add(current_product)
 
+        current_product = Product.objects.get(id=self.kwargs.get("pk"))
+        cart.cart_products.add(current_product)
         serializer.save()
