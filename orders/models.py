@@ -15,3 +15,6 @@ class Order(models.Model):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="orders"
     )
+    cart = models.ForeignKey(
+        "carts.Cart", on_delete=models.RESTRICT, related_name="order"
+    )
