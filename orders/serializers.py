@@ -3,10 +3,7 @@ from .models import Order
 from carts.models import Cart
 from django.core.mail import send_mail
 from django.conf import settings
-from products.serializers import ProductSerializer
-from carts.serializers import ProductsCartSerializer, CartSerializer
-
-# import ipdb
+from carts.serializers import ProductsCartSerializer
 
 
 class CartOrderSerializer(serializers.ModelSerializer):
@@ -37,16 +34,15 @@ class OrderSerializer(serializers.ModelSerializer):
         return Order.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        user_email = self.user.email
+        order_user_email = instance.user.email
 
         for key, value in validated_data.items():
-            # so vendedor pode alterar status
             if key == "status" and value != "Order placed":
                 send_mail(
                     subject="Order Status",
-                    message="Your order status has been updated.",
+                    message=f"Your order status has been updated to {value}.",
                     from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[user_email],
+                    recipient_list=[order_user_email],
                     fail_silently=False,
                 )
                 setattr(instance, key, value)
