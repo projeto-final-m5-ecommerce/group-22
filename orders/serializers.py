@@ -4,32 +4,27 @@ from carts.models import Cart
 from django.core.mail import send_mail
 from django.conf import settings
 from products.serializers import ProductSerializer
+from carts.serializers import ProductsCartSerializer, CartSerializer
+
+# import ipdb
+
+
+class CartOrderSerializer(serializers.ModelSerializer):
+    cart_products = ProductsCartSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ["cart_products"]
+
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = ProductSerializer(many=True, read_only=True)
+    cart = CartOrderSerializer(read_only=True)
     total = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ["id", "ordered_time", "status", "user", "products", "total"]
-        read_only_fields = ["id", "user", "ordered_time", "products", "total"]
-
-    def get_products(self, obj):
-        id_user = obj.user.id
-        filtered_cart = Cart.objects.filter(user=id_user)
-        user_cart = filtered_cart[0].cart_products.all()
-
-        list_products = []
-
-        for product in user_cart:
-            product_details = {
-                "name": product.name,
-                "category": product.category,
-                "price": product.price,
-            }
-            list_products.append(product_details)
-
-        return list_products
+        fields = ["id", "ordered_time", "status", "user", "cart", "total"]
+        read_only_fields = ["id", "user", "ordered_time", "cart", "total"]
 
     def get_total(self, obj):
         id_user = obj.user.id
